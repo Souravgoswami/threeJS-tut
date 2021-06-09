@@ -1,0 +1,75 @@
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<script src="/assets/three.js"></script>
+
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+
+	<link rel="shortcut icon" type="image/png" sizes="64x64" href="/assets/favicon.png">
+</head>
+
+<body>
+	<script>
+		let scene, camera, renderer, sphere
+		let ADDX = 0.025
+
+		let createSphere = function() {
+			let geometry = new THREE.SphereGeometry(
+				5, 30, 30,
+				0, Math.PI / 2,
+				0, Math.PI
+			)
+
+			let material = new THREE.MeshBasicMaterial({
+				color: 0xffffff,
+				wireframe: true
+			})
+
+			sphere = new THREE.Mesh(geometry, material)
+			scene.add(sphere)
+		}
+
+		let init = function() {
+			scene = new THREE.Scene()
+			scene.background = new THREE.Color(0x0)
+
+			camera = new THREE.PerspectiveCamera(
+				75,
+				window.innerWidth / window.innerHeight,
+				1,
+				1000
+			)
+
+			camera.position.z = 16
+
+			let axes = new THREE.AxesHelper(5)
+			createSphere()
+			scene.add(axes)
+
+			renderer = new THREE.WebGLRenderer()
+			renderer.setSize(window.innerWidth, window.innerHeight)
+
+			document.body.appendChild(renderer.domElement)
+		}
+
+
+		let mainLoop = function() {
+			sphere.rotation.z += ADDX
+			sphere.rotation.x += ADDX
+
+			if(sphere.position.x <= -3 || sphere.position.x >= 3)
+				ADDX *= -1
+
+			renderer.render(scene, camera)
+			requestAnimationFrame(mainLoop)
+		}
+
+		init()
+		mainLoop()
+	</script>
+</body>
