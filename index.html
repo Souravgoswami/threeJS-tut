@@ -4,21 +4,33 @@ padding: 0;
 }
 </style><link rel="shortcut icon" type="image/png" sizes="64x64" href="/assets/favicon.png"></head><body><script>let scene, camera, renderer
 let ADD = 0.025
-let doughnuts = []
-let randomInRange = function(from, to) {
-return (Math.random() * (to - from)) + from
+let rings = []
+let planet
+let createSaturn = function() {
+let geometry, material, ring
+// Planet
+geometry = new THREE.SphereGeometry(4, 30, 30)
+material = new THREE.MeshBasicMaterial({ color: 0x8d5524, wireframe: true })
+planet = new THREE.Mesh(geometry, material)
+scene.add(planet)
+// Rings
+geometry = new THREE.TorusGeometry(5.1, 0.7, 2, 50)
+material = new THREE.MeshBasicMaterial({ color: 0xffad60})
+ring = new THREE.Mesh(geometry, material)
+rings.push(ring)
+geometry = new THREE.TorusGeometry(6.9, 0.7, 2, 50)
+material = new THREE.MeshBasicMaterial({ color: 0xffad60 })
+ring = new THREE.Mesh(geometry, material)
+rings.push(ring)
+geometry = new THREE.TorusGeometry(8.5, 0.7, 2, 50)
+material = new THREE.MeshBasicMaterial({ color: 0xeac086 })
+ring  = new THREE.Mesh(geometry, material)
+rings.push(ring)
+for(let ring of rings) {
+ring.rotation.y = 0.5
+ring.rotation.x = 1.7
+scene.add(ring)
 }
-let geometry = new THREE.TorusGeometry(1, 0.5, 5, 30)
-let createDoughnut = function() {
-let material = new THREE.MeshBasicMaterial({
-color: Math.random() * 0xffffff
-})
-let torus = new THREE.Mesh(geometry, material)
-torus.position.x = randomInRange(-15, 15)
-torus.position.y = 15
-torus.position.z = randomInRange(-15, 15)
-scene.add(torus)
-doughnuts.push(torus)
 }
 let init = function() {
 scene = new THREE.Scene()
@@ -30,33 +42,24 @@ window.innerWidth / window.innerHeight,
 1000
 )
 camera.position.z = 20
-camera.position.y = -10
-renderer = new THREE.WebGLRenderer()
+// axes = new THREE.AxesHelper(10)
+// scene.add(axes)
+renderer = new THREE.WebGLRenderer({antialias: true})
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
 }
 const width = window.innerWidth
 const height = window.innerHeight
-const rayCaster = new THREE.Raycaster(scene, camera)
-const removeDoughnut = (d, i) => {
-scene.remove(d)
-doughnuts.splice(i, 1)
-}
-setInterval(() => {
-if(doughnuts.length < 10000)
-createDoughnut()
-}, 100)
 let mainLoop = function() {
-for(let i in doughnuts) {
-d = doughnuts[i]
-d.position.y -= ADD * 6
-if(d.position.y < -40) {
-removeDoughnut(d, i)
-}
-}
+planet.rotation.y += 0.01
+planet.rotation.x += 0.01
+camera.position.y += ADD
+if(camera.position.y >= 5 || camera.position.y <= -5)
+ADD *= -1
 renderer.render(scene, camera)
 requestAnimationFrame(mainLoop)
 }
 init()
+createSaturn()
 mainLoop()
 </script></body></html>
